@@ -172,7 +172,7 @@ const userData = {
 users.push(userData);
 localStorage.setItem("users", JSON.stringify(users));
 document.getElementById("signup-form").reset();
-window.location.href = "Login.html";
+window.location.href = "index.html";
 return false;
   
 }
