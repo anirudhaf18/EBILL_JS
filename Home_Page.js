@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (!first_name || !last_name) {
     // If user is not logged in, redirect to login page
-    window.location.href = "Login.html";
+    window.location.href = "index.html";
   }
 
   const profileLink = document.getElementById("profile-link");
