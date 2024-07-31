@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Ebill - Payment History</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="assets/css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: Maxim
+  * Template URL: https://bootstrapmade.com/maxim-free-onepage-bootstrap-theme/
+  * Updated: Mar 17 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="fixed-top d-flex align-items-center">
+    <div class="container d-flex justify-content-between">
+
+      <div class="logo">
+        <h1><a href="#">Ebill</a></h1>
+      </div>
+
+      <nav id="navbar" class="navbar">
+        <ul>
+          <li><a class="nav-link scrollto" href="Admin.html">Home</a></li>
+          <li><a class="nav-link scrollto" href="#">Payment History</a></li>
+          <li><a class="nav-link scrollto" href="BookingReqest.html">NewBooking Requests</a></li>
+          <li><a class="nav-link scrollto" href="Feedback_Form.html">Complaints</a></li>
+          <li><a class="nav-link scrollto" href="Login.html">Logout</a></li>
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav><!-- .navbar -->
+
+    </div>
+  </header><!-- End Header -->
+
+  <!-- ======= Payment History Section ======= -->
+  <section id="payment-history" class="payment-history">
+    <div class="container mt-5">
+      <div class="section-title">
+        <h2>Payment History</h2>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-3">
+            <input type="text" id="searchInput" class="form-control w-25" placeholder="Search...">
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th data-field="username">Username</th>
+                  <th data-field="accountNumber">Account Number</th>
+                  <th data-field="amount">Amount</th>
+                  <th data-field="mobileNumber">Mobile Number</th>
+                  <th data-field="billingPeriod">Billing Period</th>
+                  <th data-field="receiptVia">Receipt Via</th>
+                  <th data-field="paymentMethod">Payment Method</th>
+                  <th data-field="date">Date</th>
+                  <th data-field="securityQuestion">Security Question</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody">
+                <!-- Payment history records will be appended here -->
+              </tbody>
+            </table>
+          </div>
+          <nav>
+            <ul class="pagination justify-content-center" id="paginationControls">
+              <!-- Pagination controls will be generated here -->
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </section><!-- End Payment History Section -->
+
+  <footer id="footer">
+    <div class="container">
+      <div class="copyright">
+        &copy; Copyright <strong><span>Ebill</span></strong>. All Rights Reserved
+      </div>
+      <div class="credits">
+        Designed by <a href="https://bootstrapmade.com/">Anirudha</a>
+      </div>
+    </div>
+  </footer>
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="assets/js/main.js"></script>
+  <script>
+    const paymentHistory = JSON.parse(localStorage.getItem("paymentHistory")) || [];
+    const rowsPerPage = 5;
+    let currentPage = 1;
+    let currentPayments = [...paymentHistory]; // Copy of payment history for sorting and filtering
+    let currentSort = { field: null, ascending: true };
+
+    function displayTablePage(page, payments) {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const paginatedPayments = payments.slice(start, end);
+
+        const historyTableBody = document.getElementById("historyTableBody");
+        historyTableBody.innerHTML = "";
+
+        paginatedPayments.forEach(payment => {
+            historyTableBody.innerHTML += createPaymentRow(payment);
+        });
+
+        updatePaginationControls(payments);
+    }
+
+    function createPaymentRow(payment) {
+        return `
+        <tr>
+            <td>${payment.username}</td>
+            <td>${payment.accountNumber}</td>
+            <td>${payment.amount}</td>
+            <td>${payment.mobileNumber}</td>
+            <td>${payment.billingPeriod}</td>
+            <td>${payment.receiptVia}</td>
+            <td>${payment.paymentMethod}</td>
+            <td>${payment.date}</td>
+            <td>${payment.securityQuestion}</td>
+        </tr>
+        `;
+    }
+
+    function updatePaginationControls(payments) {
+        const totalPages = Math.ceil(payments.length / rowsPerPage);
+        const paginationControls = document.getElementById("paginationControls");
+
+        paginationControls.innerHTML = "";
+
+        for (let i = 1; i <= totalPages; i++) {
+            const pageItem = document.createElement("li");
+            pageItem.className = `page-item ${i === currentPage ? "active" : ""}`;
+            pageItem.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+            pageItem.addEventListener("click", function() {
+                currentPage = i;
+                displayTablePage(currentPage, currentPayments);
+            });
+
+            paginationControls.appendChild(pageItem);
+        }
+    }
+
+    function sortTable(field) {
+        const isAscending = currentSort.field === field ? !currentSort.ascending : true;
+        currentSort = { field, ascending: isAscending };
+
+        currentPayments.sort((a, b) => {
+            if (a[field] < b[field]) return isAscending ? -1 : 1;
+            if (a[field] > b[field]) return isAscending ? 1 : -1;
+            return 0;
+        });
+
+        displayTablePage(currentPage, currentPayments);
+    }
+
+    document.querySelectorAll("th[data-field]").forEach(header => {
+        header.addEventListener("click", function() {
+            const field = this.getAttribute("data-field");
+            sortTable(field);
+        });
+    });
+
+    document.getElementById("searchInput").addEventListener("input", function(event) {
+        const query = event.target.value.toLowerCase();
+        currentPayments = paymentHistory.filter(payment =>
+            payment.username.toLowerCase().includes(query) ||
+            payment.accountNumber.includes(query) ||
+            payment.amount.includes(query) ||
+            payment.mobileNumber.includes(query) ||
+            payment.billingPeriod.includes(query) ||
+            payment.receiptVia.toLowerCase().includes(query) ||
+            payment.paymentMethod.toLowerCase().includes(query) ||
+            payment.date.includes(query) ||
+            payment.securityQuestion.toLowerCase().includes(query)
+        );
+        currentPage = 1;
+        displayTablePage(currentPage, currentPayments);
+    });
+
+    // Initial display
+    displayTablePage(currentPage, currentPayments);
+  </script>
+</body>
+</html>
